@@ -5,6 +5,8 @@
  * @license      Digitsensitive
  */
 
+import { getGameApiClient } from "../GameApi"
+
 export class Coin extends Phaser.GameObjects.Image {
   private centerOfScreen: number;
   private changePositionTimer: Phaser.Time.TimerEvent;
@@ -39,7 +41,15 @@ export class Coin extends Phaser.GameObjects.Image {
     });
   }
 
-  update(): void {}
+  async update(): Promise<void> {
+    // const res = getGameApiClient().cli.put('rooms/1/coins/12345', {
+    //   x: this.x,
+    //   y: this.y
+    // }).catch(err => {
+    //   console.log(err);
+    // });
+    
+  }
 
   public changePosition(): void {
     this.setNewPosition();
