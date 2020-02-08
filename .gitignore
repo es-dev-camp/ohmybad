@@ -1,0 +1,32 @@
+#OSX
+#-------------------------------------------------------------------------------
+.DS_STORE
+
+
+#General
+#-------------------------------------------------------------------------------
+**/dist/
+**/coverage/
+**/public/
+**/node_modules/
+.vscode
+.node-version
+
+# API keys and secrets
+.env
+
+# Dependency directory
+**/node_modules
+bower_components
+
+# Editors
+.idea
+*.iml
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Logging files
+*.log
+*.pyc
