@@ -5,7 +5,7 @@
  * @license      Digitsensitive
  */
 
-import { getGameApiClient } from "../GameApi"
+import { getGameApiClient } from "../gameApi"
 
 export class MainMenuScene extends Phaser.Scene {
   private startKey: Phaser.Input.Keyboard.Key;
@@ -46,7 +46,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.titleBitmapText.width
     );
 
-    this.playBitmapText = this.add.text(0, 300, "S: PLAY NEW GAME",       {
+    this.playBitmapText = this.add.text(0, 300, "S: PLAY NEW GAME", {
       fontFamily: "Connection",
       fontSize: 38,
       stroke: "#fff",
