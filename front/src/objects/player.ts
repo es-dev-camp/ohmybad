@@ -5,6 +5,9 @@
  * @license      Digitsensitive
  */
 
+import { getGameApiClient } from "../GameApi"
+
+
 export class Player extends Phaser.GameObjects.Image {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private walkingSpeed: number;
@@ -31,8 +34,14 @@ export class Player extends Phaser.GameObjects.Image {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
   }
 
-  update(): void {
+  async update(): Promise<void> {
     this.handleInput();
+    // const res = getGameApiClient().cli.post('/room/1/players/12345', {
+    //   x: this.x,
+    //   y: this.y
+    // }).catch(err => {
+    //   console.log(err);
+    // });
   }
 
   private handleInput(): void {

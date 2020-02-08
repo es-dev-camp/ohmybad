@@ -6,7 +6,7 @@
  */
 
 import "phaser";
-import { GameScene } from "./scenes/main-scene";
+import { GameScene } from "./scenes/main-scene2";
 
 const config: Phaser.Types.Core.GameConfig = {
   title: "Coin Runner",
