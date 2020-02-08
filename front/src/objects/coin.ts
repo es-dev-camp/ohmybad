@@ -5,7 +5,7 @@
  * @license      Digitsensitive
  */
 
-import { getGameApiClient } from "../GameApi"
+// import { getGameApiClient } from "../GameApi"
 
 export class Coin extends Phaser.GameObjects.Image {
   private centerOfScreen: number;
@@ -48,7 +48,7 @@ export class Coin extends Phaser.GameObjects.Image {
     // }).catch(err => {
     //   console.log(err);
     // });
-    
+
   }
 
   public changePosition(): void {

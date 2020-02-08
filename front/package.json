@@ -36,7 +36,8 @@
   "scripts": {
     "clean": "rimraf dist && rimraf coverage && rimraf temp && rimraf trash",
     "dev": "cross-env NODE_ENV=development npm run clean && webpack --mode development && webpack-dev-server --mode development",
-    "build": "cross-env NODE_ENV=production npm run clean && webpack --mode production && webpack-dev-server --mode production"
+    "build-prod": "cross-env NODE_ENV=production npm run clean && webpack --mode production",
+    "build": "npm run build-prod && webpack-dev-server --mode production"
   },
   "repository": {
     "type": "git",
