@@ -3,6 +3,9 @@ import controller = require('./controller');
 
 const protectedRouter = new SwaggerRouter();
 
+// PLAYER ROTUES
+protectedRouter.post('/players', controller.player.createPlayer);
+
 // USER ROUTES
 protectedRouter.get('/users', controller.user.getUsers);
 protectedRouter.get('/users/:id', controller.user.getUser);
