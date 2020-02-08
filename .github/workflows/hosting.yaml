@@ -1,4 +1,4 @@
-name: CI
+name: FrontendCI
 
 on: 
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -19,15 +18,21 @@ jobs:
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
-          name: dist
+          name: public
           path: public  
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Download Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: public
+        path: public
     - name: GitHub Action for Firebase
       uses: w9jds/firebase-action@v1.3.0
       with:
         args: deploy --only hosting
       env:
-        FIREBASE_TOKEN: ${{ secrets.GCP_SA_KEY}}
+        PROJECT_ID: kuso-app-dev
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
