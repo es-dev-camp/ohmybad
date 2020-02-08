@@ -7,6 +7,7 @@
 
 import "phaser";
 import { GameScene } from "./scenes/main-scene2";
+import { MainMenuScene } from "./scenes/main-menu-scene"
 
 const config: Phaser.Types.Core.GameConfig = {
   title: "Coin Runner",
@@ -16,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 576,
   type: Phaser.AUTO,
   parent: "game",
-  scene: [GameScene],
+  scene: [MainMenuScene, GameScene],
   input: {
     keyboard: true
   },
