@@ -1,4 +1,4 @@
-name: FrontendCIDeploy Frontend App On Develop Merge
+name: Deploy Frontend App On Develop Merge
 on: 
   push:
     branches:
