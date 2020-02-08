@@ -15,6 +15,11 @@ export class GameScene extends Phaser.Scene {
   private collectedCoins: number;
   private player: Player;
 
+  private playerId: string;
+  private playerName: string;
+  private playerIdText: Phaser.GameObjects.Text;
+  private playerNameText: Phaser.GameObjects.Text;
+
   constructor() {
     super({
       key: "GameScene"
@@ -30,8 +35,11 @@ export class GameScene extends Phaser.Scene {
     this.load.image("coin", "./assets/coin.png");
   }
 
-  init(): void {
+  init(data): void {
     this.collectedCoins = 0;
+    this.playerName = data.name;
+    this.playerId = data.id;
+    console.log(data);
   }
 
   create(): void {
@@ -63,6 +71,33 @@ export class GameScene extends Phaser.Scene {
         fontSize: 38,
         stroke: "#fff",
         strokeThickness: 6,
+        fill: "#000000"
+      }
+    );
+
+    // display player info
+    this.playerIdText = this.add.text(
+      0,
+      28,
+      'id: ' + this.playerId + "",
+      {
+        fontFamily: "Connection",
+        fontSize: 20,
+        stroke: "#fff",
+        strokeThickness: 4,
+        fill: "#000000"
+      }
+    );
+
+    this.playerNameText = this.add.text(
+      0,
+      0,
+      'player: ' + this.playerName + "",
+      {
+        fontFamily: "Connection",
+        fontSize: 20,
+        stroke: "#fff",
+        strokeThickness: 4,
         fill: "#000000"
       }
     );

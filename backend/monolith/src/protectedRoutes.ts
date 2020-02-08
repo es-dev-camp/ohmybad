@@ -3,13 +3,16 @@ import controller = require('./controller');
 
 const protectedRouter = new SwaggerRouter();
 
+// PLAYER ROTUES
+protectedRouter.post('/players', controller.player.createPlayer);
+
 // USER ROUTES
-protectedRouter.get('/users', controller.user.getUsers);
-protectedRouter.get('/users/:id', controller.user.getUser);
-protectedRouter.post('/users', controller.user.createUser);
-protectedRouter.put('/users/:id', controller.user.updateUser);
-protectedRouter.delete('/users/:id', controller.user.deleteUser);
-protectedRouter.delete('/testusers', controller.user.deleteTestUsers);
+// protectedRouter.get('/users', controller.user.getUsers);
+// protectedRouter.get('/users/:id', controller.user.getUser);
+// protectedRouter.post('/users', controller.user.createUser);
+// protectedRouter.put('/users/:id', controller.user.updateUser);
+// protectedRouter.delete('/users/:id', controller.user.deleteUser);
+// protectedRouter.delete('/testusers', controller.user.deleteTestUsers);
 
 // Swagger endpoint
 protectedRouter.swagger({
