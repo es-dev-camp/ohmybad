@@ -1,5 +1,6 @@
 import { BaseContext } from 'koa';
 import { validate, ValidationError } from 'class-validator';
+import Haikunator from 'haikunator';
 import { request, summary, body, responsesAll, tagsAll } from 'koa-swagger-decorator';
 import { Player, playerSchema } from '../entity/player';
 
@@ -10,7 +11,6 @@ export default class PlayerController {
   @summary('Create a player')
   @body(playerSchema)
   public static async createPlayer(ctx: BaseContext) {
-
     // get a user repository to perform operations with user
     // const userRepository: Repository<User> = getManager().getRepository(User);
 
@@ -35,8 +35,11 @@ export default class PlayerController {
         }
         return result;
       };
+
+      const haikunator = new Haikunator();
       const rand = randomString('0123456789', 6);
       playerToBeSaved.id = rand;
+      playerToBeSaved.name = haikunator.haikunate();
       // save the user contained in the POST body
       // const user = await userRepository.save(userToBeSaved);
       // return CREATED status code and updated user
