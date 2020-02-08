@@ -5,7 +5,7 @@
  * @license      Digitsensitive
  */
 
-import { getGameApiClient } from "../GameApi"
+// import { getGameApiClient } from "../GameApi"
 
 
 export class Player extends Phaser.GameObjects.Image {
