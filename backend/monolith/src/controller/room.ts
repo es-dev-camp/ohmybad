@@ -1,7 +1,7 @@
 import { BaseContext } from 'koa';
 import { validate, ValidationError } from 'class-validator';
 import { request, summary, body, responsesAll, tagsAll } from 'koa-swagger-decorator';
-import { Room, roomSchema } from '../entity/room';
+import { Room, roomSchema, PlayerLocation, playerLocationScheme } from '../entity/room';
 import { idGenerator } from '../util';
 
 @responsesAll({ 200: { description: 'success'}, 400: { description: 'bad request'}, 401: { description: 'unauthorized, missing/wrong jwt token'}})
@@ -80,6 +80,40 @@ export default class PlayerController {
           coins: initialCoins
         };
       }
+
+      // save the user contained in the POST body
+      // const user = await userRepository.save(userToBeSaved);
+      // return CREATED status code and updated user
+      ctx.status = 201;
+    }
+  }
+
+  @request('put', '/rooms/{room_id}/players/{player_id}')
+  @summary('Update a player location in a room')
+  @body(playerLocationScheme)
+  public static async updatePlayerLocation(ctx: BaseContext) {
+    // get a user repository to perform operations with user
+    // const userRepository: Repository<User> = getManager().getRepository(User);
+
+    // build up entity user to be saved
+    console.log(ctx.request.body);
+    const playerLocation: PlayerLocation = new PlayerLocation();
+
+    playerLocation.id = ctx.params.player_id || ''; // will always have a number, this will avoid errors
+    playerLocation.x = ctx.request.body.x;
+    playerLocation.y = ctx.request.body.y;
+
+    // validate user entity
+    const errors: ValidationError[] = await validate(playerLocation); // errors is an array of validation errors
+
+    if (errors.length > 0) {
+      // return BAD REQUEST status code and errors array
+      ctx.status = 400;
+      ctx.body = errors;
+    } else {
+
+      // 今は特に調停せずそのまま返す
+      ctx.body = playerLocation;
 
       // save the user contained in the POST body
       // const user = await userRepository.save(userToBeSaved);
