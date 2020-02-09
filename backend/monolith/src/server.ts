@@ -1,3 +1,4 @@
+import 'newrelic';
 import Koa from 'koa';
 import jwt from 'koa-jwt';
 import bodyParser from 'koa-bodyparser';
