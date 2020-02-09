@@ -10,6 +10,7 @@ import {
   coinLocationScheme
 } from '../entity/room';
 import { idGenerator } from '../util';
+import { TemporaryStore } from '../temporaryStore';
 
 @responsesAll({ 200: { description: 'success'}, 400: { description: 'bad request'}, 401: { description: 'unauthorized, missing/wrong jwt token'}})
 @tagsAll(['Room'])
@@ -95,18 +96,44 @@ export default class PlayerController {
     }
   }
 
+  @request('get', '/rooms/{room_id}/players')
+  @summary('Get player locations in a room')
+  @body(playerLocationScheme)
+  public static async getPlayerLocation(ctx: BaseContext) {
+    const store = TemporaryStore.instance;
+
+    // build up entity user to be saved
+    console.log(ctx.request.body);
+    const playerLocations: PlayerLocation[] = [];
+
+    const roomId = ctx.params.room_id || '';
+
+    if (store.playerLocations[roomId]) {
+      for (const key of Object.keys(store.playerLocations[roomId])) {
+        const p = store.playerLocations[roomId][key];
+        playerLocations.push(p);
+      }
+    }
+    ctx.body = {
+      players: playerLocations
+    };
+    ctx.status = 201;
+  }
+
   @request('put', '/rooms/{room_id}/players/{player_id}')
   @summary('Update a player location in a room')
   @body(playerLocationScheme)
   public static async updatePlayerLocation(ctx: BaseContext) {
-    // get a user repository to perform operations with user
-    // const userRepository: Repository<User> = getManager().getRepository(User);
+    const store = TemporaryStore.instance;
 
     // build up entity user to be saved
     console.log(ctx.request.body);
     const playerLocation: PlayerLocation = new PlayerLocation();
 
-    playerLocation.id = ctx.params.player_id || ''; // will always have a number, this will avoid errors
+    const roomId = ctx.params.room_id || '';
+    const playerId = ctx.params.player_id || ''; // will always have a number, this will avoid errors
+
+    playerLocation.id = playerId;
     playerLocation.x = ctx.request.body.x;
     playerLocation.y = ctx.request.body.y;
 
@@ -118,6 +145,14 @@ export default class PlayerController {
       ctx.status = 400;
       ctx.body = errors;
     } else {
+
+      // 接続しているプレイヤーの位置情報をメモリに保持
+      if (!store.playerLocations[roomId]) {
+        store.playerLocations[roomId] = {};
+      }
+      if (!store.playerLocations[roomId][playerId]) {
+        store.playerLocations[roomId][playerId] = playerLocation;
+      }
 
       // 今は特に調停せずそのまま返す
       ctx.body = playerLocation;
