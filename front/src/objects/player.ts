@@ -36,18 +36,24 @@ export class Player extends Phaser.GameObjects.Image {
   }
 
   async update(): Promise<void> {
-    this.handleInput();
-
-    // ゲームサーバ側の値で現在地を補正
-    const res = await getGameApiClient().cli.put('rooms/1/players/' + this.id, {
-      id: this.id,
+    const preLocation = {
       x: this.x,
       y: this.y
-    }).catch(err => console.log(err));
-    if (res) {
-      const serverValue = res.data;
-      this.x = serverValue.x;
-      this.y = serverValue.y;
+    };
+    this.handleInput();
+
+    if (this.x !== preLocation.x || this.y !== preLocation.y) {
+      // ゲームサーバ側の値で現在地を補正
+      const res = await getGameApiClient().cli.put('rooms/1/players/' + this.id, {
+        id: this.id,
+        x: this.x,
+        y: this.y
+      }).catch(err => console.log(err));
+      if (res) {
+        const serverValue = res.data;
+        this.x = serverValue.x;
+        this.y = serverValue.y;
+      }
     }
   }
 
