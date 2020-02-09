@@ -6,6 +6,12 @@ const protectedRouter = new SwaggerRouter();
 // PLAYER ROTUES
 protectedRouter.post('/players', controller.player.createPlayer);
 
+// ROOM ROTUES
+// protectedRouter.post('/rooms', controller.room.createRoom);
+protectedRouter.put('/rooms/:id', controller.room.changeRoomStatus);
+protectedRouter.put('/rooms/:room_id/players/:player_id', controller.room.updatePlayerLocation);
+protectedRouter.put('/rooms/:room_id/coins/:coin_id', controller.room.updateCoinLocation);
+
 // USER ROUTES
 // protectedRouter.get('/users', controller.user.getUsers);
 // protectedRouter.get('/users/:id', controller.user.getUser);

@@ -8,12 +8,24 @@
 import { Coin } from "../objects/coin";
 import { Player } from "../objects/player";
 
+import { getGameApiClient } from "../gameApi"
+
+/* とりあえず部屋固定 */
+const roomId = '1';
+
 export class GameScene extends Phaser.Scene {
   private background: Phaser.GameObjects.Image;
-  private coin: Coin;
+  private coins: Coin[];
   private coinsCollectedText: Phaser.GameObjects.Text;
   private collectedCoins: number;
   private player: Player;
+
+  private playerId: string;
+  private playerName: string;
+  private playerIdText: Phaser.GameObjects.Text;
+  private playerNameText: Phaser.GameObjects.Text;
+
+  private initFinished: boolean = false;
 
   constructor() {
     super({
@@ -30,28 +42,46 @@ export class GameScene extends Phaser.Scene {
     this.load.image("coin", "./assets/coin.png");
   }
 
-  init(): void {
+  init(data): void {
     this.collectedCoins = 0;
+    this.playerName = data.name;
+    this.playerId = data.id;
+    console.log(data);
+    this.coins = [];
   }
 
-  create(): void {
+  async create(): Promise<void> {
+    this.initFinished = false;
+
     // create background
     this.background = this.add.image(0, 0, "background");
     this.background.setOrigin(0, 0);
 
-    // create objects
-    this.coin = new Coin({
-      scene: this,
-      x: Phaser.Math.RND.integerInRange(100, 700),
-      y: Phaser.Math.RND.integerInRange(100, 500),
-      key: "coin"
+    const res = await getGameApiClient().cli.put('rooms/' + roomId, {
+      status: 'init'
     });
+
+    const roomData = res.data;
+
+    for (const coin of roomData.coins) {
+      const newCoin = new Coin({
+        scene: this,
+        x: coin.x,
+        y: coin.y,
+        key: 'coin'
+      });
+      newCoin.id = coin.id;
+      this.coins.push(newCoin);
+    }
+
+    // create objects
     this.player = new Player({
       scene: this,
       x: this.sys.canvas.width / 2,
       y: this.sys.canvas.height / 2,
       key: "player"
     });
+    this.player.id = this.playerId;
 
     // create texts
     this.coinsCollectedText = this.add.text(
@@ -66,27 +96,75 @@ export class GameScene extends Phaser.Scene {
         fill: "#000000"
       }
     );
+
+    // display player info
+    this.playerIdText = this.add.text(
+      0,
+      28,
+      'id: ' + this.playerId + "",
+      {
+        fontFamily: "Connection",
+        fontSize: 20,
+        stroke: "#fff",
+        strokeThickness: 4,
+        fill: "#000000"
+      }
+    );
+
+    this.playerNameText = this.add.text(
+      0,
+      0,
+      'player: ' + this.playerName + "",
+      {
+        fontFamily: "Connection",
+        fontSize: 20,
+        stroke: "#fff",
+        strokeThickness: 4,
+        fill: "#000000"
+      }
+    );
+    this.initFinished = true;
   }
 
   update(): void {
+    if (!this.initFinished) {
+      return;
+    }
     // update objects
     this.player.update();
-    this.coin.update();
 
+    // this.coin.update();
+    this.coins.forEach(c => {
+      c.update();
     // do the collision check
-    if (
-      Phaser.Geom.Intersects.RectangleToRectangle(
-        this.player.getBounds(),
-        this.coin.getBounds()
-      )
-    ) {
-      this.updateCoinStatus();
-    }
+      if (
+        Phaser.Geom.Intersects.RectangleToRectangle(
+          this.player.getBounds(),
+          c.getBounds()
+        )
+      ) {
+        this.updateCoinStatus(c);
+      }
+    })
+
   }
 
-  private updateCoinStatus(): void {
-    this.collectedCoins++;
-    this.coinsCollectedText.setText(this.collectedCoins + "");
-    this.coin.changePosition();
+  private async updateCoinStatus(coin: Coin): Promise<void> {
+    const res = await getGameApiClient().cli.put('rooms/' + roomId + '/coins/' + coin.id, {
+      id: coin.id,
+      x: coin.x,
+      y: coin.y,
+      gained: true
+    }).catch(err => console.log(err));
+
+    if (res) {
+      this.collectedCoins++;
+      this.coinsCollectedText.setText(this.collectedCoins + "");
+      
+      const result = res.data;
+      coin.id = result.newCoin.id;
+      coin.changePosition(result.newCoin.x, result.newCoin.y);
+    }
+
   }
 }
