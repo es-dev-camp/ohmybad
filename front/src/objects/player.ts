@@ -5,12 +5,13 @@
  * @license      Digitsensitive
  */
 
-// import { getGameApiClient } from "../GameApi"
+import { getGameApiClient } from "../gameApi"
 
 
 export class Player extends Phaser.GameObjects.Image {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private walkingSpeed: number;
+  public id: string;
 
   constructor(params) {
     super(params.scene, params.x, params.y, params.key);
@@ -36,12 +37,18 @@ export class Player extends Phaser.GameObjects.Image {
 
   async update(): Promise<void> {
     this.handleInput();
-    // const res = getGameApiClient().cli.post('/room/1/players/12345', {
-    //   x: this.x,
-    //   y: this.y
-    // }).catch(err => {
-    //   console.log(err);
-    // });
+
+    // ゲームサーバ側の値で現在地を補正
+    const res = await getGameApiClient().cli.put('rooms/1/players/' + this.id, {
+      id: this.id,
+      x: this.x,
+      y: this.y
+    }).catch(err => console.log(err));
+    if (res) {
+      const serverValue = res.data;
+      this.x = serverValue.x;
+      this.y = serverValue.y;
+    }
   }
 
   private handleInput(): void {

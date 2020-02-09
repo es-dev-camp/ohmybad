@@ -79,6 +79,7 @@ export class GameScene extends Phaser.Scene {
       y: this.sys.canvas.height / 2,
       key: "player"
     });
+    this.player.id = this.playerId;
 
     // create texts
     this.coinsCollectedText = this.add.text(
