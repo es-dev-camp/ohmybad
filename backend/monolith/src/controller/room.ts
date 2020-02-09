@@ -49,7 +49,7 @@ export default class PlayerController {
   @summary('Update a room')
   @body(roomSchema)
   public static async changeRoomStatus(ctx: BaseContext) {
-    const maxCoinNum: number = 5;
+    const maxCoinNum: number = 2;
     // get a user repository to perform operations with user
     // const userRepository: Repository<User> = getManager().getRepository(User);
 

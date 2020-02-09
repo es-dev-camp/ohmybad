@@ -8,9 +8,14 @@
 import { Coin } from "../objects/coin";
 import { Player } from "../objects/player";
 
+import { getGameApiClient } from "../gameApi"
+
+/* とりあえず部屋固定 */
+const roomId = '1';
+
 export class GameScene extends Phaser.Scene {
   private background: Phaser.GameObjects.Image;
-  private coin: Coin;
+  private coins: Coin[];
   private coinsCollectedText: Phaser.GameObjects.Text;
   private collectedCoins: number;
   private player: Player;
@@ -19,6 +24,8 @@ export class GameScene extends Phaser.Scene {
   private playerName: string;
   private playerIdText: Phaser.GameObjects.Text;
   private playerNameText: Phaser.GameObjects.Text;
+
+  private initFinished: boolean = false;
 
   constructor() {
     super({
@@ -40,20 +47,32 @@ export class GameScene extends Phaser.Scene {
     this.playerName = data.name;
     this.playerId = data.id;
     console.log(data);
+    this.coins = [];
   }
 
-  create(): void {
+  async create(): Promise<void> {
+    this.initFinished = false;
+
     // create background
     this.background = this.add.image(0, 0, "background");
     this.background.setOrigin(0, 0);
 
-    // create objects
-    this.coin = new Coin({
-      scene: this,
-      x: Phaser.Math.RND.integerInRange(100, 700),
-      y: Phaser.Math.RND.integerInRange(100, 500),
-      key: "coin"
+    const res = await getGameApiClient().cli.put('rooms/' + roomId, {
+      status: 'init'
     });
+
+    const roomData = res.data;
+
+    for (const coin of roomData.coins) {
+      this.coins.push(new Coin({
+        scene: this,
+        x: coin.x,
+        y: coin.y,
+        key: 'coin'
+      }));
+    }
+
+    // create objects
     this.player = new Player({
       scene: this,
       x: this.sys.canvas.width / 2,
@@ -101,27 +120,35 @@ export class GameScene extends Phaser.Scene {
         fill: "#000000"
       }
     );
+    this.initFinished = true;
   }
 
   update(): void {
+    if (!this.initFinished) {
+      return;
+    }
     // update objects
     this.player.update();
-    this.coin.update();
 
+    // this.coin.update();
+    this.coins.forEach(c => {
+      c.update();
     // do the collision check
-    if (
-      Phaser.Geom.Intersects.RectangleToRectangle(
-        this.player.getBounds(),
-        this.coin.getBounds()
-      )
-    ) {
-      this.updateCoinStatus();
-    }
+      if (
+        Phaser.Geom.Intersects.RectangleToRectangle(
+          this.player.getBounds(),
+          c.getBounds()
+        )
+      ) {
+        this.updateCoinStatus(c);
+      }
+    })
+
   }
 
-  private updateCoinStatus(): void {
+  private updateCoinStatus(coin: Coin): void {
     this.collectedCoins++;
     this.coinsCollectedText.setText(this.collectedCoins + "");
-    this.coin.changePosition();
+    coin.changePosition();
   }
 }
