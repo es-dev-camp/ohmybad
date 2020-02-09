@@ -29,6 +29,7 @@ export class GameScene extends Phaser.Scene {
   private initFinished: boolean = false;
 
   private nowSyncingOtherPlayers: boolean = false;
+  private nowSyncingCoin: boolean = false;
 
   constructor() {
     super({
@@ -147,7 +148,9 @@ export class GameScene extends Phaser.Scene {
           c.getBounds()
         )
       ) {
-        this.updateCoinStatus(c);
+        if (!this.nowSyncingCoin) {
+          this.updateCoinStatus(c);
+        }
       }
     })
 
@@ -165,17 +168,12 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     const players = res.data;
-
-    // console.log(players);
-
     for (const p of players.players) {
       if (p.id === this.player.id) {
         continue;
       }
 
       if (!this.otherPlayers[p.id]) {
-
-        console.log(p.x, p.y);
         const o = new Player({
           scene: this,
           x: p.x,
@@ -195,6 +193,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private async updateCoinStatus(coin: Coin): Promise<void> {
+    this.nowSyncingCoin = true;
     const res = await getGameApiClient().cli.put('rooms/' + roomId + '/coins/' + coin.id, {
       id: coin.id,
       x: coin.x,
@@ -203,13 +202,19 @@ export class GameScene extends Phaser.Scene {
     }).catch(err => console.log(err));
 
     if (res) {
-      this.collectedCoins++;
-      this.coinsCollectedText.setText(this.collectedCoins + "");
-      
       const result = res.data;
-      coin.id = result.newCoin.id;
-      coin.changePosition(result.newCoin.x, result.newCoin.y);
+      // コインを取得できた場合のみアップデートする
+      if (result.newCoin) {
+        this.collectedCoins++;
+        this.coinsCollectedText.setText(this.collectedCoins + '');
+        
+        coin.id = result.newCoin.id;
+        coin.changePosition(result.newCoin.x, result.newCoin.y);
+      } else if (result.nextCoin){
+        coin.id = result.nextCoin.id;
+        coin.changePosition(result.nextCoin.x, result.nextCoin.y); 
+      }
     }
-
+    this.nowSyncingCoin = false;
   }
 }

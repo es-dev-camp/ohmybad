@@ -237,6 +237,7 @@ export default class PlayerController {
               };
               serverCoin.gained = true;
               serverCoin.nextCoin = newCoin;
+              store.coinLocations[roomId][newCoin.id] = newCoin;
             } else {
               // 取得済みなら次のコインの位置を返す
               ctx.body = {
