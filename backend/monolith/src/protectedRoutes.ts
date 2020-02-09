@@ -9,6 +9,7 @@ protectedRouter.post('/players', controller.player.createPlayer);
 // ROOM ROTUES
 // protectedRouter.post('/rooms', controller.room.createRoom);
 protectedRouter.put('/rooms/:id', controller.room.changeRoomStatus);
+protectedRouter.get('/rooms/:room_id/players/', controller.room.getPlayerLocation);
 protectedRouter.put('/rooms/:room_id/players/:player_id', controller.room.updatePlayerLocation);
 protectedRouter.put('/rooms/:room_id/coins/:coin_id', controller.room.updateCoinLocation);
 

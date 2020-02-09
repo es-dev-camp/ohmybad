@@ -1,7 +1,7 @@
 export class Player {
-    id: string;
-    name: string;
-    highScore: number;
+  id: string;
+  name: string;
+  highScore: number;
 }
 
 export const playerSchema = {

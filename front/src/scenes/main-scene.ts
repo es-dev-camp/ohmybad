@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
   private coinsCollectedText: Phaser.GameObjects.Text;
   private collectedCoins: number;
   private player: Player;
+  private otherPlayers: {[id: string]: Player};
 
   private playerId: string;
   private playerName: string;
@@ -26,6 +27,8 @@ export class GameScene extends Phaser.Scene {
   private playerNameText: Phaser.GameObjects.Text;
 
   private initFinished: boolean = false;
+
+  private nowSyncingOtherPlayers: boolean = false;
 
   constructor() {
     super({
@@ -48,6 +51,7 @@ export class GameScene extends Phaser.Scene {
     this.playerId = data.id;
     console.log(data);
     this.coins = [];
+    this.otherPlayers = {};
   }
 
   async create(): Promise<void> {
@@ -126,7 +130,7 @@ export class GameScene extends Phaser.Scene {
     this.initFinished = true;
   }
 
-  update(): void {
+  async update(): Promise<void> {
     if (!this.initFinished) {
       return;
     }
@@ -147,6 +151,47 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
+    if (!this.nowSyncingOtherPlayers) {
+      this.startSyncOtherPlayers()
+    }
+  }
+
+  async startSyncOtherPlayers(): Promise<void> {
+    this.nowSyncingOtherPlayers = true;
+    const res = await getGameApiClient().cli.get('rooms/' + roomId + '/players')
+    .catch(err => console.log(err));
+    if (!res) {
+      this.nowSyncingOtherPlayers = false;
+      return;
+    }
+    const players = res.data;
+
+    // console.log(players);
+
+    for (const p of players.players) {
+      if (p.id === this.player.id) {
+        continue;
+      }
+
+      if (!this.otherPlayers[p.id]) {
+
+        console.log(p.x, p.y);
+        const o = new Player({
+          scene: this,
+          x: p.x,
+          y: p.y,
+          key: "player"
+        });
+        o.id = p.id;
+        this.otherPlayers[p.id] = o;
+      } else {
+        console.log(p.x, p.y);
+        const target = this.otherPlayers[p.id];
+        target.x = p.x;
+        target.y = p.y;
+      }
+    }
+    this.nowSyncingOtherPlayers = false;
   }
 
   private async updateCoinStatus(coin: Coin): Promise<void> {
