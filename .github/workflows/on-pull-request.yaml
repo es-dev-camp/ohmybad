@@ -1,0 +1,30 @@
+name: Build Test On Pull Request
+on: 
+  pull_request:
+    branches:
+      - develop
+      - master
+jobs:
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        working-directory: ./front
+        run: npm install
+      - name: Build
+        working-directory: ./front      
+        run: npm run build-prod
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: public
+          path: front/public
+  backend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Build a docker image
+        run: docker build -f ./backend/monolith/Dockerfile ./backend/monolith
