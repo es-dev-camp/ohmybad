@@ -25,6 +25,14 @@ export class CoinLocation {
   x: number;
   y: number;
   gained: boolean;
+  nextCoin?: CoinLocation;
+
+  constructor(id: string, x: number, y: number) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.gained = false;
+  }
 }
 
 export const coinLocationScheme = {

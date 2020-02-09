@@ -12,6 +12,7 @@ protectedRouter.put('/rooms/:id', controller.room.changeRoomStatus);
 protectedRouter.get('/rooms/:room_id/players/', controller.room.getPlayerLocation);
 protectedRouter.put('/rooms/:room_id/players/:player_id', controller.room.updatePlayerLocation);
 protectedRouter.put('/rooms/:room_id/coins/:coin_id', controller.room.updateCoinLocation);
+protectedRouter.get('/rooms/:room_id/coins/', controller.room.getCoinLocation);
 
 // USER ROUTES
 // protectedRouter.get('/users', controller.user.getUsers);
