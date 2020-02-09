@@ -19,3 +19,17 @@ export const playerLocationScheme = {
   x: { type: 'number', required: true, example: 123 },
   y: { type: 'number', required: true, example: 123 },
 };
+
+export class CoinLocation {
+  id: string;
+  x: number;
+  y: number;
+  gained: boolean;
+}
+
+export const coinLocationScheme = {
+  id: { type: 'string', required: true, example: '12345' },
+  x: { type: 'number', required: true, example: 123 },
+  y: { type: 'number', required: true, example: 123 },
+  gained: { type: 'number', require: true, example: false },
+};

@@ -1,7 +1,14 @@
 import { BaseContext } from 'koa';
 import { validate, ValidationError } from 'class-validator';
 import { request, summary, body, responsesAll, tagsAll } from 'koa-swagger-decorator';
-import { Room, roomSchema, PlayerLocation, playerLocationScheme } from '../entity/room';
+import {
+  Room,
+  roomSchema,
+  PlayerLocation,
+  playerLocationScheme,
+  CoinLocation,
+  coinLocationScheme
+} from '../entity/room';
 import { idGenerator } from '../util';
 
 @responsesAll({ 200: { description: 'success'}, 400: { description: 'bad request'}, 401: { description: 'unauthorized, missing/wrong jwt token'}})
@@ -114,6 +121,50 @@ export default class PlayerController {
 
       // 今は特に調停せずそのまま返す
       ctx.body = playerLocation;
+
+      // save the user contained in the POST body
+      // const user = await userRepository.save(userToBeSaved);
+      // return CREATED status code and updated user
+      ctx.status = 201;
+    }
+  }
+
+  @request('put', '/rooms/{room_id}/coins/{coin_id}')
+  @summary('Update a coin location in a room')
+  @body(coinLocationScheme)
+  public static async updateCoinLocation(ctx: BaseContext) {
+    // get a user repository to perform operations with user
+    // const userRepository: Repository<User> = getManager().getRepository(User);
+
+    // build up entity user to be saved
+    console.log(ctx.request.body);
+    const coinLocation: CoinLocation = new CoinLocation();
+
+    coinLocation.id = ctx.params.coin_id || ''; // will always have a number, this will avoid errors
+    coinLocation.x = ctx.request.body.x;
+    coinLocation.y = ctx.request.body.y;
+    coinLocation.gained = ctx.request.body.gained;
+
+    // validate user entity
+    const errors: ValidationError[] = await validate(coinLocation); // errors is an array of validation errors
+
+    if (errors.length > 0) {
+      // return BAD REQUEST status code and errors array
+      ctx.status = 400;
+      ctx.body = errors;
+    } else {
+
+      ctx.body = coinLocation;
+      if (coinLocation.gained) {
+        const newCoin = crateNewCoin();
+        ctx.body = {
+          ...ctx.body,
+          newCoin: {
+            ...newCoin,
+            gained: false
+          }
+        };
+      }
 
       // save the user contained in the POST body
       // const user = await userRepository.save(userToBeSaved);
