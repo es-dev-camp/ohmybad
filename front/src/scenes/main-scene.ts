@@ -157,6 +157,7 @@ export class GameScene extends Phaser.Scene {
     if (!this.nowSyncingOtherPlayers) {
       this.startSyncOtherPlayers()
     }
+    await this.updateAllCoinLocation();
   }
 
   async startSyncOtherPlayers(): Promise<void> {
@@ -216,5 +217,46 @@ export class GameScene extends Phaser.Scene {
       }
     }
     this.nowSyncingCoin = false;
+  }
+
+  private async updateAllCoinLocation(): Promise<void> {
+    const res = await getGameApiClient().cli.get('rooms/' + roomId + '/coins').catch(err => console.log(err));
+    if (!res) {
+      return;
+    }
+    const coinLocation = res.data;
+
+    // NOTE: ローカルにないコインをリモートの新しいコインで上書きする部分
+    // NOTE: いい感じのアルゴリズムが思い浮かばなかったので力技でやっています
+    const updatableLocalCoinObjects: Coin[] = [];
+    for (const lc of this.coins) {
+      let hasNotSameCoinId = false
+      for (const sc of coinLocation.coins) {
+        sc.needSync = true;
+        if (sc.id === lc.id) {
+          hasNotSameCoinId = true;
+          sc.needSync = false;
+        }
+      }
+      if (!hasNotSameCoinId) {
+        updatableLocalCoinObjects.push(lc);
+      }
+    }
+
+    const needSyncRemoteCoins = [];
+    for (const sc of coinLocation.coins) {
+      if (!sc.needSync) {
+        continue;
+      }
+      needSyncRemoteCoins.push(sc);
+    }
+
+    for (let i = 0; i < updatableLocalCoinObjects.length; i++) {
+      const local = updatableLocalCoinObjects[i];
+      const remote = needSyncRemoteCoins[i];
+      local.id = remote.id;
+      local.x = remote.x;
+      local.y = remote.y;
+    }
   }
 }

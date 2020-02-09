@@ -184,6 +184,32 @@ export default class PlayerController {
     }
   }
 
+  @request('get', '/rooms/{room_id}/coins')
+  @summary('Get coin locations in a room')
+  @body(coinLocationScheme)
+  public static async getCoinLocation(ctx: BaseContext) {
+    const store = TemporaryStore.instance;
+
+    // build up entity user to be saved
+    console.log(ctx.request.body);
+    const coinLocations: CoinLocation[] = [];
+
+    const roomId = ctx.params.room_id || '';
+
+    if (store.coinLocations[roomId]) {
+      for (const key of Object.keys(store.coinLocations[roomId])) {
+        const p = store.coinLocations[roomId][key];
+        if (!p.gained) {
+          coinLocations.push(p);
+        }
+      }
+    }
+    ctx.body = {
+      coins: coinLocations
+    };
+    ctx.status = 201;
+  }
+
   @request('put', '/rooms/{room_id}/coins/{coin_id}')
   @summary('Update a coin location in a room')
   @body(coinLocationScheme)
