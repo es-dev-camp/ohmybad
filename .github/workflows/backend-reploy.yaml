@@ -37,4 +37,5 @@ jobs:
               --region $GCP_REGION \
               --platform managed \
               --allow-unauthenticated \
+              --update-env-vars=NEW_RELIC_APP_NAME=$SERVICE_NAME,NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
               --quiet

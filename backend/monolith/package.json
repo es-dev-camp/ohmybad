@@ -67,6 +67,7 @@
     "koa-jwt": "^3.3.2",
     "koa-router": "^7.4.0",
     "koa-swagger-decorator": "^1.5.16",
+    "newrelic": "^6.3.0",
     "reflect-metadata": "^0.1.12",
     "winston": "^3.2.1"
   }
