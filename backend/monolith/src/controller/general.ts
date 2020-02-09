@@ -8,7 +8,7 @@ export default class GeneralController {
     @summary('Welcome page')
     @description('A simple welcome message to verify the service is up and running.')
     public static async helloWorld(ctx: BaseContext) {
-        ctx.body = 'Shall we Coin Runer?';
+        ctx.body = 'Shall we Coin Runner?';
     }
 
 }
