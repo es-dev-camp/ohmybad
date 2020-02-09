@@ -49,11 +49,6 @@ export class Player extends Phaser.GameObjects.Image {
         x: this.x,
         y: this.y
       }).catch(err => console.log(err));
-      if (res) {
-        const serverValue = res.data;
-        this.x = serverValue.x;
-        this.y = serverValue.y;
-      }
     }
   }
 

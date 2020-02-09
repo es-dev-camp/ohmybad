@@ -154,6 +154,9 @@ export default class PlayerController {
         store.playerLocations[roomId][playerId] = playerLocation;
       }
 
+      store.playerLocations[roomId][playerId].x = playerLocation.x;
+      store.playerLocations[roomId][playerId].y = playerLocation.y;
+
       // 今は特に調停せずそのまま返す
       ctx.body = playerLocation;
 
