@@ -60,6 +60,7 @@
     "class-validator": "^0.9.1",
     "cron": "^1.7.2",
     "dotenv": "^8.0.0",
+    "haikunator": "^2.1.2",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-helmet": "^4.2.0",
