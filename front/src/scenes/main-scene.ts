@@ -25,6 +25,7 @@ export class GameScene extends Phaser.Scene {
   private playerName: string;
   private playerIdText: Phaser.GameObjects.Text;
   private playerNameText: Phaser.GameObjects.Text;
+  private connectedPlayersCountText: Phaser.GameObjects.Text;
 
   private initFinished: boolean = false;
 
@@ -130,6 +131,18 @@ export class GameScene extends Phaser.Scene {
         fill: "#000000"
       }
     );
+    this.connectedPlayersCountText = this.add.text(
+      0,
+      this.sys.canvas.height - 30,
+      '接続数: ' + Object.keys(this.otherPlayers).length + "",
+      {
+        fontFamily: "Connection",
+        fontSize: 20,
+        stroke: "#fff",
+        strokeThickness: 4,
+        fill: "#000000"
+      }
+    );
     this.initFinished = true;
   }
 
@@ -206,6 +219,7 @@ export class GameScene extends Phaser.Scene {
         t.destroy();
       }
     }
+    this.connectedPlayersCountText.setText('接続数: ' + (Object.keys(this.otherPlayers).length + 1) +'');
     this.nowSyncingOtherPlayers = false;
   }
 

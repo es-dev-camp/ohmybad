@@ -8,6 +8,7 @@
 import { getGameApiClient } from "../gameApi"
 
 export class MainMenuScene extends Phaser.Scene {
+  private title: Phaser.GameObjects.Image;
   private startKey: Phaser.Input.Keyboard.Key;
   private titleBitmapText: Phaser.GameObjects.Text;
   private playBitmapText: Phaser.GameObjects.Text;
@@ -19,6 +20,10 @@ export class MainMenuScene extends Phaser.Scene {
     });
   }
 
+  preload(): void {
+    this.load.image("title", "./assets/title.png");
+  }
+
   init(): void {
     this.startKey = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.S
@@ -28,11 +33,14 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    // create background
+    this.title = this.add.image(0, 0, "title");
+    this.title.setOrigin(0, 0);
 
     this.titleBitmapText = this.add.text(
       this.sys.canvas.width / 2,
       this.sys.canvas.height - 50,
-      "COIN RUNER",
+      "INFINITE COIN © 2020 ES-DEV-CAMP",
       {
         fontFamily: "Connection",
         fontSize: 38,
