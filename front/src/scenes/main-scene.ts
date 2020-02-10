@@ -30,6 +30,8 @@ export class GameScene extends Phaser.Scene {
 
   private nowSyncingOtherPlayers: boolean = false;
   private nowSyncingCoin: boolean = false;
+  private otherPlaerSyncFPS: number = 3;
+  private currentFrameIndex: number = 0;
 
   constructor() {
     super({
@@ -154,10 +156,11 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
-    if (!this.nowSyncingOtherPlayers) {
+    if (!this.nowSyncingOtherPlayers && (this.currentFrameIndex % this.otherPlaerSyncFPS) === 0) {
       this.startSyncOtherPlayers()
     }
     await this.updateAllCoinLocation();
+    this.currentFrameIndex++;
   }
 
   async startSyncOtherPlayers(): Promise<void> {
