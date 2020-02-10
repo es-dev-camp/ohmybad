@@ -5,6 +5,7 @@ const protectedRouter = new SwaggerRouter();
 
 // PLAYER ROTUES
 protectedRouter.post('/players', controller.player.createPlayer);
+protectedRouter.post('/players/:player_id', controller.player.updatePlayer);
 
 // ROOM ROTUES
 // protectedRouter.post('/rooms', controller.room.createRoom);
