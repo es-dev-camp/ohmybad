@@ -30,6 +30,8 @@ export class GameScene extends Phaser.Scene {
 
   private nowSyncingOtherPlayers: boolean = false;
   private nowSyncingCoin: boolean = false;
+  private otherPlaerSyncFPS: number = 3;
+  private currentFrameIndex: number = 0;
 
   constructor() {
     super({
@@ -136,7 +138,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     // update objects
-    this.player.update();
+    this.player.update(this.currentFrameIndex);
 
     // this.coin.update();
     this.coins.forEach(c => {
@@ -154,10 +156,11 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
-    if (!this.nowSyncingOtherPlayers) {
+    if (!this.nowSyncingOtherPlayers && (this.currentFrameIndex % this.otherPlaerSyncFPS) === 0) {
       this.startSyncOtherPlayers()
     }
     await this.updateAllCoinLocation();
+    this.currentFrameIndex++;
   }
 
   async startSyncOtherPlayers(): Promise<void> {
@@ -184,10 +187,23 @@ export class GameScene extends Phaser.Scene {
         o.id = p.id;
         this.otherPlayers[p.id] = o;
       } else {
-        console.log(p.x, p.y);
+        // console.log(p.x, p.y);
         const target = this.otherPlayers[p.id];
         target.x = p.x;
         target.y = p.y;
+      }
+    }
+    // サーバー側のレスポンスに含まれなくなった他のプレイヤーのオブジェクトを削除
+    for (const o of Object.keys(this.otherPlayers)) {
+      const t = this.otherPlayers[o];
+      let incluedRes = false;
+      for (const p of players.players) {
+        if (t.id === p.id) {
+          incluedRes = true;
+        }
+      }
+      if (!incluedRes) {
+        t.destroy();
       }
     }
     this.nowSyncingOtherPlayers = false;

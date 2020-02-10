@@ -12,6 +12,8 @@ export class Player extends Phaser.GameObjects.Image {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private walkingSpeed: number;
   public id: string;
+  private serverLocationX: number;
+  private serverLocationY: number;
 
   constructor(params) {
     super(params.scene, params.x, params.y, params.key);
@@ -25,6 +27,8 @@ export class Player extends Phaser.GameObjects.Image {
 
   private initVariables(): void {
     this.walkingSpeed = 5;
+    this.serverLocationX = this.x;
+    this.serverLocationY = this.y;
   }
 
   private initImage(): void {
@@ -35,20 +39,27 @@ export class Player extends Phaser.GameObjects.Image {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
   }
 
-  async update(): Promise<void> {
+  async update(frameIndex: number): Promise<void> {
     const preLocation = {
       x: this.x,
       y: this.y
     };
     this.handleInput();
 
-    if (this.x !== preLocation.x || this.y !== preLocation.y) {
+    // 直前の位置と違う、または、サーバ側と同期できていない場合は自分の位置送り続ける
+    if (this.x !== preLocation.x || this.y !== preLocation.y
+      || this.x !== this.serverLocationX || this.y !== this.serverLocationY) {
       // ゲームサーバ側の値で現在地を補正
       const res = await getGameApiClient().cli.put('rooms/1/players/' + this.id, {
         id: this.id,
         x: this.x,
-        y: this.y
+        y: this.y,
+        lastUpdatedIndex: frameIndex,
       }).catch(err => console.log(err));
+      if (res) {
+        this.serverLocationX = res.data.x;
+        this.serverLocationY = res.data.y;
+      }
     }
   }
 

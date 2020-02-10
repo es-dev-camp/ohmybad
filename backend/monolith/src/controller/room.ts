@@ -124,11 +124,15 @@ export default class PlayerController {
     const playerLocations: PlayerLocation[] = [];
 
     const roomId = ctx.params.room_id || '';
-
+    const currentUnixTime = new Date().getTime();
     if (store.playerLocations[roomId]) {
       for (const key of Object.keys(store.playerLocations[roomId])) {
         const p = store.playerLocations[roomId][key];
-        playerLocations.push(p);
+        if (currentUnixTime < p.lastUpdateUnixTime + 3 * 60 * 1000) {
+          // 最後のアップデートから一定時間経過したものはクライアントに返さない
+          // TODO: リストから削除する
+          playerLocations.push(p);
+        }
       }
     }
     ctx.body = {
@@ -153,6 +157,8 @@ export default class PlayerController {
     playerLocation.id = playerId;
     playerLocation.x = ctx.request.body.x;
     playerLocation.y = ctx.request.body.y;
+    playerLocation.lastUpdatedIndex = ctx.request.body.lastUpdatedIndex;
+    playerLocation.lastUpdateUnixTime = new Date().getTime();
 
     // validate user entity
     const errors: ValidationError[] = await validate(playerLocation); // errors is an array of validation errors
@@ -171,11 +177,13 @@ export default class PlayerController {
         store.playerLocations[roomId][playerId] = playerLocation;
       }
 
-      store.playerLocations[roomId][playerId].x = playerLocation.x;
-      store.playerLocations[roomId][playerId].y = playerLocation.y;
-
-      // 今は特に調停せずそのまま返す
-      ctx.body = playerLocation;
+      if (store.playerLocations[roomId][playerId].lastUpdatedIndex < playerLocation.lastUpdatedIndex) {
+        // クライアント側のFrameIndexが新しいもののみ保存
+        store.playerLocations[roomId][playerId] = playerLocation;
+        ctx.body = store.playerLocations[roomId][playerId];
+      } else {
+        ctx.body = playerLocation;
+      }
 
       // save the user contained in the POST body
       // const user = await userRepository.save(userToBeSaved);
