@@ -138,7 +138,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     // update objects
-    this.player.update();
+    this.player.update(this.currentFrameIndex);
 
     // this.coin.update();
     this.coins.forEach(c => {

@@ -153,6 +153,7 @@ export default class PlayerController {
     playerLocation.id = playerId;
     playerLocation.x = ctx.request.body.x;
     playerLocation.y = ctx.request.body.y;
+    playerLocation.lastUpdatedIndex = ctx.request.body.lastUpdatedIndex;
 
     // validate user entity
     const errors: ValidationError[] = await validate(playerLocation); // errors is an array of validation errors
@@ -171,11 +172,14 @@ export default class PlayerController {
         store.playerLocations[roomId][playerId] = playerLocation;
       }
 
-      store.playerLocations[roomId][playerId].x = playerLocation.x;
-      store.playerLocations[roomId][playerId].y = playerLocation.y;
-
-      // 今は特に調停せずそのまま返す
-      ctx.body = playerLocation;
+      if (store.playerLocations[roomId][playerId].lastUpdatedIndex < playerLocation.lastUpdatedIndex) {
+        // クライアント側のFrameIndexが新しいもののみ保存
+        store.playerLocations[roomId][playerId].x = playerLocation.x;
+        store.playerLocations[roomId][playerId].y = playerLocation.y;
+        ctx.body = store.playerLocations[roomId][playerId];
+      } else {
+        ctx.body = playerLocation;
+      }
 
       // save the user contained in the POST body
       // const user = await userRepository.save(userToBeSaved);

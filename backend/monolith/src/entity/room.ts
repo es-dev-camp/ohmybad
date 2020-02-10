@@ -12,12 +12,14 @@ export class PlayerLocation {
   id: string;
   x: number;
   y: number;
+  lastUpdatedIndex: number;
 }
 
 export const playerLocationScheme = {
   id: { type: 'string', required: true, example: '12345' },
   x: { type: 'number', required: true, example: 123 },
   y: { type: 'number', required: true, example: 123 },
+  lastUpdatedIndex: { type: 'number', required: true, example: 123 },
 };
 
 export class CoinLocation {
