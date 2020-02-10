@@ -32,7 +32,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.titleBitmapText = this.add.text(
       this.sys.canvas.width / 2,
       this.sys.canvas.height - 50,
-      "COIN RUNER",
+      "INFINITE COIN © 2020 ES-DEV-CAMP",
       {
         fontFamily: "Connection",
         fontSize: 38,

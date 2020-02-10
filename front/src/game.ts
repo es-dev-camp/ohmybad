@@ -10,7 +10,7 @@ import { GameScene } from "./scenes/main-scene";
 import { MainMenuScene } from "./scenes/main-menu-scene";
 
 const config: Phaser.Types.Core.GameConfig = {
-  title: "Coin Runner",
+  title: "Infinite Coin Runner",
   url: "https://github.com/digitsensitive/phaser3-typescript",
   version: "1.1.1",
   width: 768,
