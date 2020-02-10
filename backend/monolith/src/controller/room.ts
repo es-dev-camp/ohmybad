@@ -124,11 +124,15 @@ export default class PlayerController {
     const playerLocations: PlayerLocation[] = [];
 
     const roomId = ctx.params.room_id || '';
-
+    const currentUnixTime = new Date().getTime();
     if (store.playerLocations[roomId]) {
       for (const key of Object.keys(store.playerLocations[roomId])) {
         const p = store.playerLocations[roomId][key];
-        playerLocations.push(p);
+        if (currentUnixTime < p.lastUpdateUnixTime + 3 * 60 * 1000) {
+          // 最後のアップデートから一定時間経過したものはクライアントに返さない
+          // TODO: リストから削除する
+          playerLocations.push(p);
+        }
       }
     }
     ctx.body = {
@@ -154,6 +158,7 @@ export default class PlayerController {
     playerLocation.x = ctx.request.body.x;
     playerLocation.y = ctx.request.body.y;
     playerLocation.lastUpdatedIndex = ctx.request.body.lastUpdatedIndex;
+    playerLocation.lastUpdateUnixTime = new Date().getTime();
 
     // validate user entity
     const errors: ValidationError[] = await validate(playerLocation); // errors is an array of validation errors

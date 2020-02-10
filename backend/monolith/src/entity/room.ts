@@ -13,6 +13,7 @@ export class PlayerLocation {
   x: number;
   y: number;
   lastUpdatedIndex: number;
+  lastUpdateUnixTime: number;
 }
 
 export const playerLocationScheme = {
@@ -20,6 +21,7 @@ export const playerLocationScheme = {
   x: { type: 'number', required: true, example: 123 },
   y: { type: 'number', required: true, example: 123 },
   lastUpdatedIndex: { type: 'number', required: true, example: 123 },
+  lastUpdateUnixTime: { type: 'number', required: false, example: 123 },
 };
 
 export class CoinLocation {
