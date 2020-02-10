@@ -174,8 +174,7 @@ export default class PlayerController {
 
       if (store.playerLocations[roomId][playerId].lastUpdatedIndex < playerLocation.lastUpdatedIndex) {
         // クライアント側のFrameIndexが新しいもののみ保存
-        store.playerLocations[roomId][playerId].x = playerLocation.x;
-        store.playerLocations[roomId][playerId].y = playerLocation.y;
+        store.playerLocations[roomId][playerId] = playerLocation;
         ctx.body = store.playerLocations[roomId][playerId];
       } else {
         ctx.body = playerLocation;
