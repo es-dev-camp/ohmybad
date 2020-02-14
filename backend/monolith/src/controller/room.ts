@@ -136,7 +136,8 @@ export default class PlayerController {
       }
     }
     ctx.body = {
-      players: playerLocations
+      players: playerLocations,
+      serverUnixTime: currentUnixTime,
     };
     ctx.status = 201;
   }
@@ -203,6 +204,7 @@ export default class PlayerController {
     const coinLocations: CoinLocation[] = [];
 
     const roomId = ctx.params.room_id || '';
+    const currentUnixTime = new Date().getTime();
 
     if (store.coinLocations[roomId]) {
       for (const key of Object.keys(store.coinLocations[roomId])) {
@@ -213,7 +215,8 @@ export default class PlayerController {
       }
     }
     ctx.body = {
-      coins: coinLocations
+      coins: coinLocations,
+      serverUnixTime: currentUnixTime,
     };
     ctx.status = 201;
   }
